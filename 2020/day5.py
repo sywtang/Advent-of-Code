@@ -1,5 +1,6 @@
-with open("day5.txt", "r") as fd:
-    lines = [line.rstrip() for line in fd]
+from helpers.parser import data_parser
+
+lines = data_parser("day5.txt")
 
 SEAT = "FBFBBFFRLR"
 SEAT_2 = "FB"
@@ -24,6 +25,44 @@ def part_one(data):
         if seat > highest_seat:
             highest_seat = seat
     return highest_seat
+
+
+def part_two(data):
+    # what is your seat ID?
+    # very front and back seats are not yours
+    seat_range = find_seat_range(data)
+    start = seat_range[0]
+    end = seat_range[1]
+
+    # compile of a list of all of the seat IDs and find the gap in the middle
+    seat_ids = []
+    current_sum_in_list = 0
+    total_sum = float("-inf")
+
+    for i in range(len(data)):
+        seat = partition_seats(data[i])
+        seat_ids.append(seat)
+
+    seat_ids.sort()
+
+    # current sum of all seat IDs in list
+    for id in seat_ids:
+        current_sum_in_list = max(id, id + current_sum_in_list)
+
+        if current_sum_in_list > total_sum:
+            total_sum = current_sum_in_list
+
+    current_sum = 0
+    max_sum = float("-inf")
+
+    # max possible sum from start to end in list
+    for id in range(int(start), int(end + 1)):
+        current_sum = max(id, id + current_sum)
+
+        if current_sum > max_sum:
+            max_sum = current_sum
+
+    return max_sum - total_sum
 
 
 def partition_seats(data):
@@ -65,4 +104,22 @@ def partition_seats(data):
     return seat
 
 
+def find_seat_range(data):
+    lowest_seat = float("inf")
+    highest_seat = float("-inf")
+
+    for i in range(len(data)):
+        seat = partition_seats(data[i])
+        if seat < lowest_seat:
+            lowest_seat = seat
+
+    for i in range(len(data)):
+        seat = partition_seats(data[i])
+        if seat > highest_seat:
+            highest_seat = seat
+
+    return [lowest_seat, highest_seat]
+
+
 print(part_one(lines))
+print(part_two(lines))
