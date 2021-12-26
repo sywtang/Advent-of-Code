@@ -1,4 +1,4 @@
-from helpers.parser import data_parser
+from utils.parser import data_parser
 
 lines = data_parser("day5.txt")
 
